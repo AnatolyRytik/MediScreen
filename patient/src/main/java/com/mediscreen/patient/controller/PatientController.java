@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,11 +24,22 @@ public class PatientController {
         this.patientService = patientService;
     }
 
-    @PostMapping
-    public ResponseEntity<Patient> createPatient(@Valid @RequestBody PatientDto patientDto) {
-        Patient createdPatient = patientService.createPatient(patientDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPatient);
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("patientDto", new PatientDto());
+        return "patients/add";
     }
+
+    @PostMapping("/add")
+    public String createPatient(@Valid @ModelAttribute("patientDto") PatientDto patientDto, BindingResult result) {
+        if (result.hasErrors()) {
+            return "patients/add";
+        }
+        patientService.createPatient(patientDto);
+        return "redirect:/patients";
+    }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPatient(@PathVariable @Min(1) Long id) {
