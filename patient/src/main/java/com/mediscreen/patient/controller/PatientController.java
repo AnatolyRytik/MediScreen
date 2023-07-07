@@ -82,16 +82,16 @@ public class PatientController {
         }
     }
 
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable @Min(1) Long id) {
+    @RequestMapping("/delete/{id}")
+    public String deletePatient(@PathVariable("id") Long id) {
         try {
             patientService.deletePatient(id);
-            return ResponseEntity.noContent().build();
+            return "redirect:/patients";
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return "error";
         }
     }
+
 
 }
 
