@@ -1,6 +1,7 @@
 package com.mediscreen.patient.controller;
 
 import com.mediscreen.patient.dto.PatientDto;
+import com.mediscreen.patient.model.Patient;
 import com.mediscreen.patient.service.PatientService;
 import com.mediscreen.patient.util.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,8 @@ public class PatientController {
     }
 
     @PostMapping
-    public ResponseEntity<PatientDto> createPatient(@Valid @RequestBody PatientDto patientDto) {
-        PatientDto createdPatient = patientService.createPatient(patientDto);
+    public ResponseEntity<Patient> createPatient(@Valid @RequestBody PatientDto patientDto) {
+        Patient createdPatient = patientService.createPatient(patientDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPatient);
     }
 
@@ -37,15 +38,15 @@ public class PatientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PatientDto>> getAllPatients() {
-        List<PatientDto> patients = patientService.getAllPatients();
+    public ResponseEntity<List<Patient>> getAllPatients() {
+        List<Patient> patients = patientService.getAllPatients();
         return ResponseEntity.ok(patients);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePatient(@PathVariable @Min(1) Long id, @Valid @RequestBody PatientDto patientDto) {
         try {
-            PatientDto updatedPatient = patientService.updatePatient(id, patientDto);
+            Patient updatedPatient = patientService.updatePatient(id, patientDto);
             return ResponseEntity.ok(updatedPatient);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

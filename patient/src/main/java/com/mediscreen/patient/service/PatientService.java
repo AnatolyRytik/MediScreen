@@ -1,17 +1,18 @@
 package com.mediscreen.patient.service;
 
 import com.mediscreen.patient.dto.PatientDto;
+import com.mediscreen.patient.model.Patient;
 
 import java.util.List;
 
 public interface PatientService {
-    PatientDto createPatient(PatientDto PatientDto);
+    Patient createPatient(PatientDto PatientDto);
 
     PatientDto getPatient(Long id);
 
-    List<PatientDto> getAllPatients();
+    List<Patient> getAllPatients();
 
-    PatientDto updatePatient(Long id, PatientDto PatientDto);
+    Patient updatePatient(Long id, PatientDto PatientDto);
 
     void deletePatient(Long id);
 }

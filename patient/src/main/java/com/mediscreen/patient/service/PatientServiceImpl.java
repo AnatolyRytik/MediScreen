@@ -21,10 +21,10 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public PatientDto createPatient(PatientDto PatientDto) {
+    public Patient createPatient(PatientDto PatientDto) {
         Patient patient = patientMapper.toEntity(PatientDto);
         Patient savedPatient = patientRepository.save(patient);
-        return patientMapper.toDto(savedPatient);
+        return savedPatient;
     }
 
     @Override
@@ -35,13 +35,13 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<PatientDto> getAllPatients() {
+    public List<Patient> getAllPatients() {
         List<Patient> patientList = patientRepository.findAll();
-        return patientList.stream().map(patientMapper::toDto).collect(Collectors.toList());
+        return patientList;
     }
 
     @Override
-    public PatientDto updatePatient(Long id, PatientDto patientDTO) {
+    public Patient updatePatient(Long id, PatientDto patientDTO) {
         Patient existingPatient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found with ID: " + id));
 
@@ -49,7 +49,7 @@ public class PatientServiceImpl implements PatientService {
         updatedPatient.setId(existingPatient.getId());
 
         Patient savedPatient = patientRepository.save(updatedPatient);
-        return patientMapper.toDto(savedPatient);
+        return savedPatient;
     }
 
     @Override
