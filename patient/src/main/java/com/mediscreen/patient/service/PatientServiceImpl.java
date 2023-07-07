@@ -5,11 +5,12 @@ import com.mediscreen.patient.model.Patient;
 import com.mediscreen.patient.repository.PatientRepository;
 import com.mediscreen.patient.util.exception.NotFoundException;
 import com.mediscreen.patient.util.mapper.PatientMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class PatientServiceImpl implements PatientService {
     private final PatientRepository patientRepository;
@@ -21,14 +22,16 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Patient createPatient(PatientDto PatientDto) {
-        Patient patient = patientMapper.toEntity(PatientDto);
+    public Patient createPatient(PatientDto patientDto) {
+        log.info("Creating patient");
+        Patient patient = patientMapper.toEntity(patientDto);
         Patient savedPatient = patientRepository.save(patient);
         return savedPatient;
     }
 
     @Override
     public Patient getPatient(Long id) {
+        log.info("Getting patient with ID: {}", id);
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found with ID: " + id));
         return patient;
@@ -36,12 +39,14 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public List<Patient> getAllPatients() {
+        log.info("Getting all patients");
         List<Patient> patientList = patientRepository.findAll();
         return patientList;
     }
 
     @Override
     public Patient updatePatient(Long id, PatientDto patientDTO) {
+        log.info("Updating patient with ID: {}", id);
         Patient existingPatient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found with ID: " + id));
 
@@ -54,9 +59,9 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void deletePatient(Long id) {
+        log.info("Deleting patient with ID: {}", id);
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found with ID: " + id));
         patientRepository.deleteById(id);
     }
 }
-

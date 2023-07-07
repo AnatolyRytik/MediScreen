@@ -1,4 +1,5 @@
 package com.mediscreen.patient.model;
+
 import lombok.Data;
 
 import javax.persistence.*;
