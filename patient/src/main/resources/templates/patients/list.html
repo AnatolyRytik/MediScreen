@@ -31,7 +31,7 @@
             <td th:text="${patient.phoneNumber}"></td>
             <td>
                 <!-- Update button -->
-                <a th:href="@{/patients/update/{id}(id=${patient.id})}" class="btn btn-primary btn-sm" style="color: white;">Update</a>
+                <a th:href="@{/patients/{id}(id=${patient.id})}" class="btn btn-primary btn-sm" style="color: white;">View</a>
                 <!-- Delete button -->
                 <a th:href="@{/patients/delete/{id}(id=${patient.id})}" class="btn btn-danger btn-sm" style="color: white;">Delete</a>
             </td>

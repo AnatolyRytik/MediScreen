@@ -40,14 +40,18 @@ public class PatientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPatient(@PathVariable @Min(1) Long id) {
+    public String getPatient(Model model, @PathVariable("id") Long id) {
         try {
-            Patient patientDto = patientService.getPatient(id);
-            return ResponseEntity.ok(patientDto);
+            Patient patient = patientService.getPatient(id);
+            model.addAttribute("patient", patient);
+            return "patients/patient";
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            model.addAttribute("errorMessage", "Patient not found");
+            return "error";
         }
     }
+
+
 
     @GetMapping
     public String getAllPatients(Model model) {
@@ -64,13 +68,14 @@ public class PatientController {
             model.addAttribute("patientDto", patientDto);
             return "patients/update";
         } catch (NotFoundException e) {
+            model.addAttribute("errorMessage", "Patient not found");
             return "error";
         }
     }
 
     @PostMapping("/update/{id}")
     public String updatePatient(@PathVariable("id") Long id, @Valid @ModelAttribute("patientDto") PatientDto patientDto,
-                                BindingResult result) {
+                                BindingResult result, Model model) {
         try {
             if (result.hasErrors()) {
                 return "patients/update";
@@ -78,20 +83,21 @@ public class PatientController {
             patientService.updatePatient(id, patientDto);
             return "redirect:/patients";
         } catch (NotFoundException e) {
+            model.addAttribute("errorMessage", "Patient not found");
             return "error";
         }
     }
 
     @RequestMapping("/delete/{id}")
-    public String deletePatient(@PathVariable("id") Long id) {
+    public String deletePatient(@PathVariable("id") Long id, Model model) {
         try {
             patientService.deletePatient(id);
             return "redirect:/patients";
         } catch (NotFoundException e) {
+            model.addAttribute("errorMessage", "Patient not found");
             return "error";
         }
     }
-
 
 }
 

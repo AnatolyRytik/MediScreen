@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Details</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h2>Patient Details</h2>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>First Name</th>
+            <td th:text="${patient.firstName}"></td>
+        </tr>
+        <tr>
+            <th>Last Name</th>
+            <td th:text="${patient.lastName}"></td>
+        </tr>
+        <tr>
+            <th>Birth Date</th>
+            <td th:text="${patient.birthDate}"></td>
+        </tr>
+        <tr>
+            <th>Gender</th>
+            <td th:text="${patient.gender}"></td>
+        </tr>
+        <tr>
+            <th>Address</th>
+            <td th:text="${patient.address}"></td>
+        </tr>
+        <tr>
+            <th>Phone Number</th>
+            <td th:text="${patient.phoneNumber}"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <a th:href="@{/patients/update/{id}(id=${patient.id})}" class="btn btn-primary"style="color: white;">Update</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
