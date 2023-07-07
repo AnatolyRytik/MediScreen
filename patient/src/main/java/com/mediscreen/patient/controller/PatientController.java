@@ -6,13 +6,15 @@ import com.mediscreen.patient.service.PatientService;
 import com.mediscreen.patient.util.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/patients")
 public class PatientController {
     private final PatientService patientService;
@@ -38,10 +40,12 @@ public class PatientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Patient>> getAllPatients() {
+    public String getAllPatients(Model model) {
         List<Patient> patients = patientService.getAllPatients();
-        return ResponseEntity.ok(patients);
+        model.addAttribute("patients", patients);
+        return "patients/list";
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePatient(@PathVariable @Min(1) Long id, @Valid @RequestBody PatientDto patientDto) {
