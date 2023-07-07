@@ -39,12 +39,10 @@ public class PatientController {
         return "redirect:/patients";
     }
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getPatient(@PathVariable @Min(1) Long id) {
         try {
-            PatientDto patientDto = patientService.getPatient(id);
+            Patient patientDto = patientService.getPatient(id);
             return ResponseEntity.ok(patientDto);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -59,15 +57,31 @@ public class PatientController {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updatePatient(@PathVariable @Min(1) Long id, @Valid @RequestBody PatientDto patientDto) {
+    @GetMapping("/update/{id}")
+    public String showUpdateForm(Model model, @PathVariable("id") Long id) {
         try {
-            Patient updatedPatient = patientService.updatePatient(id, patientDto);
-            return ResponseEntity.ok(updatedPatient);
+            Patient patientDto = patientService.getPatient(id);
+            model.addAttribute("patientDto", patientDto);
+            return "patients/update";
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return "error";
         }
     }
+
+    @PostMapping("/update/{id}")
+    public String updatePatient(@PathVariable("id") Long id, @Valid @ModelAttribute("patientDto") PatientDto patientDto,
+                                BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                return "patients/update";
+            }
+            patientService.updatePatient(id, patientDto);
+            return "redirect:/patients";
+        } catch (NotFoundException e) {
+            return "error";
+        }
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable @Min(1) Long id) {
@@ -78,5 +92,6 @@ public class PatientController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
 }
 

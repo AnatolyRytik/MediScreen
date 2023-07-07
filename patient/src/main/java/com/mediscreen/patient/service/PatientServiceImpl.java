@@ -28,10 +28,10 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public PatientDto getPatient(Long id) {
+    public Patient getPatient(Long id) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found with ID: " + id));
-        return patientMapper.toDto(patient);
+        return patient;
     }
 
     @Override
