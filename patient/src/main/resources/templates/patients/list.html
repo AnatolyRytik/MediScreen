@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Patients</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>All Patients</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Birth Date</th>
+            <th>Gender</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="patient : ${patients}">
+            <td th:text="${patient.firstName}"></td>
+            <td th:text="${patient.lastName}"></td>
+            <td th:text="${patient.birthDate}"></td>
+            <td th:text="${patient.gender}"></td>
+            <td th:text="${patient.address}"></td>
+            <td th:text="${patient.phoneNumber}"></td>
+            <td>
+                <!-- Update button -->
+                <a th:href="@{/patients/{id}(id=${patient.id})}" class="btn btn-primary btn-sm" style="color: white;">View</a>
+                <!-- Delete button -->
+                <a th:href="@{/patients/delete/{id}(id=${patient.id})}" class="btn btn-danger btn-sm" style="color: white;">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/patients/add}" class="btn btn-primary" style="color: white;">Add Patient</a>
+</div>
+
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
