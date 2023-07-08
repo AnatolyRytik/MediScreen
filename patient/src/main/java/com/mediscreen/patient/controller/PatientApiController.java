@@ -31,6 +31,12 @@ public class PatientApiController {
         this.patientService = patientService;
     }
 
+    /**
+     * Create a new patient.
+     *
+     * @param patientDto the patient data
+     * @return the created patient
+     */
     @Operation(description = "Create a new patient")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Patient created",
@@ -43,6 +49,12 @@ public class PatientApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPatient);
     }
 
+    /**
+     * Get a patient by ID.
+     *
+     * @param id the patient ID
+     * @return the patient if found, or an error message if not found
+     */
     @Operation(description = "Get a patient by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -63,6 +75,11 @@ public class PatientApiController {
         }
     }
 
+    /**
+     * Get all patients.
+     *
+     * @return the list of all patients
+     */
     @Operation(description = "Get all patients")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -75,6 +92,13 @@ public class PatientApiController {
         return ResponseEntity.ok(patients);
     }
 
+    /**
+     * Update a patient by ID.
+     *
+     * @param id         the patient ID
+     * @param patientDto the updated patient data
+     * @return the updated patient if found, or an error message if not found
+     */
     @Operation(description = "Update a patient by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Patient updated",
@@ -94,6 +118,12 @@ public class PatientApiController {
         }
     }
 
+    /**
+     * Delete a patient by ID.
+     *
+     * @param id the patient ID
+     * @return a response with no content if the patient is deleted, or an error message if not found
+     */
     @Operation(description = "Delete a patient by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Patient deleted"),

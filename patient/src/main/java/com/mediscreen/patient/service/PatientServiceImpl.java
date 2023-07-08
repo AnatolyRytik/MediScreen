@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implementation of the PatientService interface.
+ */
 @Slf4j
 @Service
 public class PatientServiceImpl implements PatientService {
