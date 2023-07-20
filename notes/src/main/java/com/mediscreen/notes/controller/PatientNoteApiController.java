@@ -30,6 +30,11 @@ public class PatientNoteApiController {
         this.patientNoteService = patientNoteService;
     }
 
+    /**
+     * Get all patient notes for all patients.
+     *
+     * @return a list of all patient notes
+     */
     @Operation(description = "Get all patient notes for all patients")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -42,7 +47,12 @@ public class PatientNoteApiController {
         return ResponseEntity.ok(allPatientNotes);
     }
 
-
+    /**
+     * Create a new patient note.
+     *
+     * @param patientNoteDto the patient note data
+     * @return the created patient note
+     */
     @Operation(description = "Create a new patient note")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Patient note created",
@@ -55,6 +65,12 @@ public class PatientNoteApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPatientNote);
     }
 
+    /**
+     * Get a patient note by ID.
+     *
+     * @param id the patient note ID
+     * @return the patient note if found, or an error message if not found
+     */
     @Operation(description = "Get a patient note by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -74,6 +90,12 @@ public class PatientNoteApiController {
         }
     }
 
+    /**
+     * Get all patient notes for a patient.
+     *
+     * @param patientId the ID of the patient
+     * @return a list of patient notes for the given patient
+     */
     @Operation(description = "Get all patient notes for a patient")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -86,6 +108,13 @@ public class PatientNoteApiController {
         return ResponseEntity.ok(patientNotes);
     }
 
+    /**
+     * Update a patient note by ID.
+     *
+     * @param id             the patient note ID
+     * @param patientNoteDto the updated patient note data
+     * @return the updated patient note if found, or an error message if not found
+     */
     @Operation(description = "Update a patient note by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Patient note updated",
@@ -105,6 +134,12 @@ public class PatientNoteApiController {
         }
     }
 
+    /**
+     * Delete a patient note by ID.
+     *
+     * @param id the patient note ID
+     * @return a response entity with no content if the note is deleted, or an error message if not found
+     */
     @Operation(description = "Delete a patient note by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Patient note deleted"),
