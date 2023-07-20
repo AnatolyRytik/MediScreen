@@ -1,11 +1,14 @@
 package com.mediscreen.notes.service;
 
+import com.mediscreen.notes.dto.PatientNoteDto;
 import com.mediscreen.notes.model.PatientNote;
 import com.mediscreen.notes.repository.PatientNoteRepository;
 import com.mediscreen.notes.util.exception.NotFoundException;
+import com.mediscreen.notes.util.mapper.PatientNoteMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,15 +18,20 @@ import java.util.List;
 @Service
 public class PatientNoteServiceImpl implements PatientNoteService {
     private final PatientNoteRepository patientNoteRepository;
+    private final PatientNoteMapper mapper;
 
-    public PatientNoteServiceImpl(PatientNoteRepository patientNoteRepository) {
+    public PatientNoteServiceImpl(PatientNoteRepository patientNoteRepository, PatientNoteMapper mapper) {
         this.patientNoteRepository = patientNoteRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public PatientNote createPatientNote(PatientNote patientNote) {
+    public PatientNote createPatientNote(PatientNoteDto patientNoteDto) {
         log.info("Creating patient note");
-        PatientNote savedPatientNote = patientNoteRepository.save(patientNote);
+
+        PatientNote savedPatientNote = mapper.toEntity(patientNoteDto);
+        savedPatientNote.setCreationDate(new Date());
+        patientNoteRepository.save(savedPatientNote);
         return savedPatientNote;
     }
 
@@ -35,21 +43,28 @@ public class PatientNoteServiceImpl implements PatientNoteService {
     }
 
     @Override
+    public List<PatientNote> getAllPatientNotes() {
+        log.info("Getting all patient notes for all patients");
+        return patientNoteRepository.findAll();
+    }
+
+
+    @Override
     public List<PatientNote> getAllPatientNotesByPatientId(Long patientId) {
         log.info("Getting all patient notes for patient with ID: {}", patientId);
         return patientNoteRepository.getAllByPatientId(patientId);
     }
 
     @Override
-    public PatientNote updatePatientNote(String id, PatientNote patientNote) {
+    public PatientNote updatePatientNote(String id, PatientNoteDto patientNoteDto) {
         log.info("Updating patient note with ID: {}", id);
         PatientNote existingPatientNote = patientNoteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient note not found with ID: " + id));
 
+        PatientNote patientNote = mapper.toEntity(patientNoteDto);
         patientNote.setId(existingPatientNote.getId());
 
-        PatientNote updatedPatientNote = patientNoteRepository.save(patientNote);
-        return updatedPatientNote;
+        return patientNoteRepository.save(patientNote);
     }
 
     @Override
