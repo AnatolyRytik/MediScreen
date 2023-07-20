@@ -4,11 +4,10 @@ import com.mediscreen.notes.dto.PatientNoteDto;
 import com.mediscreen.notes.model.PatientNote;
 import com.mediscreen.notes.repository.PatientNoteRepository;
 import com.mediscreen.notes.util.exception.NotFoundException;
-import com.mediscreen.notes.util.mapper.PatientNoteMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -18,21 +17,18 @@ import java.util.List;
 @Service
 public class PatientNoteServiceImpl implements PatientNoteService {
     private final PatientNoteRepository patientNoteRepository;
-    private final PatientNoteMapper mapper;
 
-    public PatientNoteServiceImpl(PatientNoteRepository patientNoteRepository, PatientNoteMapper mapper) {
+    public PatientNoteServiceImpl(PatientNoteRepository patientNoteRepository) {
         this.patientNoteRepository = patientNoteRepository;
-        this.mapper = mapper;
     }
 
     @Override
     public PatientNote createPatientNote(PatientNoteDto patientNoteDto) {
         log.info("Creating patient note");
 
-        PatientNote savedPatientNote = mapper.toEntity(patientNoteDto);
-        savedPatientNote.setCreationDate(new Date());
-        patientNoteRepository.save(savedPatientNote);
-        return savedPatientNote;
+        PatientNote patientNote = new PatientNote(patientNoteDto);
+        patientNote.setCreationDate(LocalDate.now());
+        return patientNoteRepository.save(patientNote);
     }
 
     @Override
@@ -61,9 +57,9 @@ public class PatientNoteServiceImpl implements PatientNoteService {
         PatientNote existingPatientNote = patientNoteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient note not found with ID: " + id));
 
-        PatientNote patientNote = mapper.toEntity(patientNoteDto);
+        PatientNote patientNote = new PatientNote(patientNoteDto);
         patientNote.setId(existingPatientNote.getId());
-
+        patientNote.setCreationDate(existingPatientNote.getCreationDate());
         return patientNoteRepository.save(patientNote);
     }
 
