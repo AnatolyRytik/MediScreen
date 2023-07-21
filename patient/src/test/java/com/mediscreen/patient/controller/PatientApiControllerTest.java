@@ -5,34 +5,39 @@ import com.mediscreen.patient.dto.PatientDto;
 import com.mediscreen.patient.model.Patient;
 import com.mediscreen.patient.service.PatientService;
 import com.mediscreen.patient.util.exception.NotFoundException;
+import com.mediscreen.patient.util.mapper.PatientMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class PatientApiControllerTest {
+public class PatientApiControllerTest {
+    private final PatientMapper patientMapper = new PatientMapper();
     @Mock
     private PatientService patientService;
-
+    @InjectMocks
     private PatientApiController patientApiController;
-
+    private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
-        patientApiController = new PatientApiController(patientService);
+        mockMvc = MockMvcBuilders.standaloneSetup(patientApiController).build();
         objectMapper = new ObjectMapper();
     }
 
@@ -42,25 +47,21 @@ class PatientApiControllerTest {
         PatientDto patientDto = new PatientDto();
         patientDto.setFirstName("John");
         patientDto.setLastName("Doe");
-        patientDto.setBirthDate(LocalDate.of(1990, 1, 1));
         patientDto.setGender("Male");
 
-        Patient createdPatient = new Patient();
+        Patient createdPatient = patientMapper.toEntity(patientDto);
         createdPatient.setId(1L);
-        createdPatient.setFirstName("John");
-        createdPatient.setLastName("Doe");
-        createdPatient.setBirthDate(LocalDate.of(1990, 1, 1));
-        createdPatient.setGender("Male");
+        when(patientService.createPatient(patientDto)).thenReturn(createdPatient);
 
-        when(patientService.createPatient(any(PatientDto.class))).thenReturn(createdPatient);
-
-        // Act
-        ResponseEntity<Patient> responseEntity = patientApiController.createPatient(patientDto);
-
-        // Assert
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(createdPatient, responseEntity.getBody());
+        // Act & Assert
+        mockMvc.perform(post("/api/patients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(patientDto)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.firstName").value("John"))
+                .andExpect(jsonPath("$.lastName").value("Doe"));
     }
 
     @Test
@@ -74,15 +75,15 @@ class PatientApiControllerTest {
         patient.setBirthDate(LocalDate.of(1990, 1, 1));
         patient.setGender("Male");
 
-        when(patientService.getPatient(eq(patientId))).thenReturn(patient);
+        when(patientService.getPatient(patientId)).thenReturn(patient);
 
-        // Act
-        ResponseEntity<?> responseEntity = patientApiController.getPatient(patientId);
-
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(patient, responseEntity.getBody());
+        // Act & Assert
+        mockMvc.perform(get("/api/patients/{id}", patientId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(patientId))
+                .andExpect(jsonPath("$.firstName").value("John"))
+                .andExpect(jsonPath("$.lastName").value("Doe"));
     }
 
     @Test
@@ -90,13 +91,11 @@ class PatientApiControllerTest {
         // Arrange
         Long patientId = 1L;
 
-        when(patientService.getPatient(eq(patientId))).thenThrow(new NotFoundException("Patient not found"));
+        when(patientService.getPatient(patientId)).thenThrow(new NotFoundException("Patient not found"));
 
-        // Act
-        ResponseEntity<?> responseEntity = patientApiController.getPatient(patientId);
-
-        // Assert
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        // Act & Assert
+        mockMvc.perform(get("/api/patients/{id}", patientId))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -120,13 +119,17 @@ class PatientApiControllerTest {
 
         when(patientService.getAllPatients()).thenReturn(patients);
 
-        // Act
-        ResponseEntity<List<Patient>> responseEntity = patientApiController.getAllPatients();
-
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(patients, responseEntity.getBody());
+        // Act & Assert
+        mockMvc.perform(get("/api/patients"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].firstName").value("John"))
+                .andExpect(jsonPath("$[0].lastName").value("Doe"))
+                .andExpect(jsonPath("$[1].id").value(2L))
+                .andExpect(jsonPath("$[1].firstName").value("Jane"))
+                .andExpect(jsonPath("$[1].lastName").value("Smith"));
     }
 
     @Test
@@ -134,34 +137,28 @@ class PatientApiControllerTest {
         // Arrange
         Long patientId = 1L;
         PatientDto patientDto = new PatientDto();
-        patientDto.setFirstName("John");
-        patientDto.setLastName("Doe");
-        patientDto.setBirthDate(LocalDate.of(1990, 1, 1));
+        patientDto.setFirstName("Updated");
+        patientDto.setLastName("Patient");
         patientDto.setGender("Male");
 
         Patient existingPatient = new Patient();
         existingPatient.setId(patientId);
         existingPatient.setFirstName("John");
         existingPatient.setLastName("Doe");
-        existingPatient.setBirthDate(LocalDate.of(1990, 1, 1));
         existingPatient.setGender("Male");
-
-        Patient updatedPatient = new Patient();
+        Patient updatedPatient = patientMapper.toEntity(patientDto);
         updatedPatient.setId(patientId);
-        updatedPatient.setFirstName("John");
-        updatedPatient.setLastName("Doe");
-        updatedPatient.setBirthDate(LocalDate.of(1990, 1, 1));
-        updatedPatient.setGender("Male");
+        when(patientService.updatePatient(patientId, patientDto)).thenReturn(updatedPatient);
 
-        when(patientService.updatePatient(eq(patientId), any(PatientDto.class))).thenReturn(updatedPatient);
-
-        // Act
-        ResponseEntity<?> responseEntity = patientApiController.updatePatient(patientId, patientDto);
-
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(updatedPatient, responseEntity.getBody());
+        // Act & Assert
+        mockMvc.perform(put("/api/patients/{id}", patientId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(patientDto)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.firstName").value("Updated"))
+                .andExpect(jsonPath("$.lastName").value("Patient"));
     }
 
     @Test
@@ -169,33 +166,29 @@ class PatientApiControllerTest {
         // Arrange
         Long patientId = 1L;
         PatientDto patientDto = new PatientDto();
-        patientDto.setFirstName("John");
-        patientDto.setLastName("Doe");
-        patientDto.setBirthDate(LocalDate.of(1990, 1, 1));
+        patientDto.setFirstName("Updated");
+        patientDto.setLastName("Patient");
         patientDto.setGender("Male");
+        when(patientService.updatePatient(patientId, patientDto)).thenThrow(new NotFoundException("Patient not found"));
 
-        when(patientService.updatePatient(eq(patientId), any(PatientDto.class))).thenThrow(new NotFoundException("Patient not found"));
-
-        // Act
-        ResponseEntity<?> responseEntity = patientApiController.updatePatient(patientId, patientDto);
-
-        // Assert
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        // Act & Assert
+        mockMvc.perform(put("/api/patients/{id}", patientId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(patientDto)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void deletePatient_ExistingId_ReturnsNoContentResponse() throws Exception {
         // Arrange
         Long patientId = 1L;
+        Patient patient = new Patient();
+        patient.setId(patientId);
+        when(patientService.getPatient(patientId)).thenReturn(patient);
 
-        // Act
-        ResponseEntity<Void> responseEntity = patientApiController.deletePatient(patientId);
-
-        // Assert
-        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-
-        verify(patientService, times(1)).deletePatient(eq(patientId));
+        // Act & Assert
+        mockMvc.perform(delete("/api/patients/{id}", patientId))
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -205,13 +198,8 @@ class PatientApiControllerTest {
 
         doThrow(new NotFoundException("Patient not found")).when(patientService).deletePatient(eq(patientId));
 
-        // Act
-        ResponseEntity<Void> responseEntity = patientApiController.deletePatient(patientId);
-
-        // Assert
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-
-        verify(patientService, times(1)).deletePatient(eq(patientId));
+        // Act & Assert
+        mockMvc.perform(delete("/api/patients/{id}", patientId))
+                .andExpect(status().isNotFound());
     }
 }
