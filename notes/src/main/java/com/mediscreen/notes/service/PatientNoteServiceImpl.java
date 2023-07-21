@@ -66,7 +66,9 @@ public class PatientNoteServiceImpl implements PatientNoteService {
     @Override
     public void deletePatientNoteById(String id) {
         log.info("Deleting patient note with ID: {}", id);
-        patientNoteRepository.deleteById(id);
+        PatientNote existingPatientNote = patientNoteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Patient note not found with ID: " + id));
+        patientNoteRepository.delete(existingPatientNote);
     }
 }
 
