@@ -10,6 +10,6 @@ import java.util.List;
 @FeignClient(name = "patient-note-microservice", url = "localhost:8082")
 public interface PatientNotesProxy {
 
-    @GetMapping("/api/patient-notes/{id}")
+    @GetMapping("/api/patient-notes/patient/{id}")
     List<PatientNoteDto> getPatientNotes(@PathVariable("id") Long id);
 }
