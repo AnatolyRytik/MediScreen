@@ -2,7 +2,8 @@ package com.mediscreen.assessment.model;
 
 
 import com.mediscreen.assessment.constants.RiskLevel;
-import com.mediscreen.patient.dto.PatientDto;
+
+import com.mediscreen.assessment.dto.PatientDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
