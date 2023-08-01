@@ -3,6 +3,7 @@ package com.mediscreen.notes.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mediscreen.notes.dto.PatientNoteDto;
 import com.mediscreen.notes.model.PatientNote;
+import com.mediscreen.notes.proxy.PatientProxy;
 import com.mediscreen.notes.service.PatientNoteService;
 import com.mediscreen.notes.util.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -126,6 +127,8 @@ public class PatientNoteApiControllerTests {
         // Arrange
         String id = "1";
         PatientNoteDto patientNoteDto = new PatientNoteDto();
+        patientNoteDto.setPatientId(1l);
+        patientNoteDto.setNote("Hello");
         PatientNote existingPatientNote = new PatientNote();
         existingPatientNote.setId(id);
         existingPatientNote.setCreationDate(LocalDate.of(2023, 6, 16)); // Set a valid creationDate
@@ -148,6 +151,8 @@ public class PatientNoteApiControllerTests {
         // Arrange
         String id = "1";
         PatientNoteDto patientNoteDto = new PatientNoteDto();
+        patientNoteDto.setPatientId(1l);
+        patientNoteDto.setNote("Hello");
         when(patientNoteService.updatePatientNote(id, patientNoteDto)).thenThrow(new NotFoundException("Not found"));
 
         // Act & Assert

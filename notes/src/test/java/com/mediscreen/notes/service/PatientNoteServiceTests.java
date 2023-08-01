@@ -2,6 +2,7 @@ package com.mediscreen.notes.service;
 
 import com.mediscreen.notes.dto.PatientNoteDto;
 import com.mediscreen.notes.model.PatientNote;
+import com.mediscreen.notes.proxy.PatientProxy;
 import com.mediscreen.notes.repository.PatientNoteRepository;
 import com.mediscreen.notes.util.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,9 @@ public class PatientNoteServiceTests {
     @Mock
     private PatientNoteRepository patientNoteRepository;
 
+    @Mock
+    private PatientProxy patientProxy;
+
     @InjectMocks
     private PatientNoteServiceImpl patientNoteService;
 
@@ -36,6 +40,8 @@ public class PatientNoteServiceTests {
     public void testCreatePatientNote() {
         // Arrange
         PatientNoteDto patientNoteDto = new PatientNoteDto();
+        patientNoteDto.setPatientId(1l);
+        patientNoteDto.setNote("Hello");
         PatientNote patientNote = new PatientNote(patientNoteDto);
         patientNote.setCreationDate(LocalDate.now());
         when(patientNoteRepository.save(patientNote)).thenReturn(patientNote);
