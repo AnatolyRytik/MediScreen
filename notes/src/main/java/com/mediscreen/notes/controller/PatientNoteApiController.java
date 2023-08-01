@@ -59,10 +59,15 @@ public class PatientNoteApiController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientNote.class)))
     })
     @PostMapping
-    public ResponseEntity<PatientNote> createPatientNote(@Valid @RequestBody PatientNoteDto patientNoteDto) {
+    public ResponseEntity<?> createPatientNote(@Valid @RequestBody PatientNoteDto patientNoteDto) {
         log.info("Creating a new patient note: {}", patientNoteDto);
-        PatientNote createdPatientNote = patientNoteService.createPatientNote(patientNoteDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPatientNote);
+        try {
+            PatientNote createdPatientNote = patientNoteService.createPatientNote(patientNoteDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdPatientNote);
+        } catch (NotFoundException e) {
+            log.error("Patient note not found with ID: {}", patientNoteDto.getPatientId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     /**
@@ -102,10 +107,16 @@ public class PatientNoteApiController {
                     content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PatientNote.class))))
     })
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<PatientNote>> getAllPatientNotesByPatientId(@PathVariable Long patientId) {
+    public ResponseEntity<?> getAllPatientNotesByPatientId(@PathVariable Long patientId) {
         log.info("Getting all patient notes for patient with ID: {}", patientId);
-        List<PatientNote> patientNotes = patientNoteService.getAllPatientNotesByPatientId(patientId);
-        return ResponseEntity.ok(patientNotes);
+        try {
+            List<PatientNote> patientNotes = patientNoteService.getAllPatientNotesByPatientId(patientId);
+            return ResponseEntity.ok(patientNotes);
+        } catch (NotFoundException e) {
+            log.error("Patient not found with ID: {}", patientId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
     /**
@@ -146,14 +157,14 @@ public class PatientNoteApiController {
             @ApiResponse(responseCode = "404", description = "Patient note not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatientNote(@PathVariable String id) {
+    public ResponseEntity<?> deletePatientNote(@PathVariable String id) {
         log.info("Deleting patient note with ID: {}", id);
         try {
             patientNoteService.deletePatientNoteById(id);
             return ResponseEntity.noContent().build();
         } catch (NotFoundException e) {
             log.error("Patient note not found with ID: {}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }
