@@ -47,7 +47,7 @@ public class AssessmentServiceTest {
         patientNoteDto.setNote("Rechute");
         List<PatientNoteDto> patientNoteDtoList = List.of(patientNoteDto);
         when(patientProxy.getPatientById(patientId)).thenReturn(patientDto);
-        when(patientNotesProxy.getPatientNotes(patientId)).thenReturn(patientNoteDtoList);
+        when(patientNotesProxy.getAllPatientNotesByPatientId(patientId)).thenReturn(patientNoteDtoList);
 
         // Act
         Report report = assessmentService.getPatientRiskLevel(patientId);
@@ -56,7 +56,7 @@ public class AssessmentServiceTest {
         assertEquals(patientId, report.getPatientDto().getId());
         assertEquals(RiskLevel.NONE, report.getRiskLevel());
         verify(patientProxy, times(1)).getPatientById(patientId);
-        verify(patientNotesProxy, times(1)).getPatientNotes(patientId);
+        verify(patientNotesProxy, times(1)).getAllPatientNotesByPatientId(patientId);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class AssessmentServiceTest {
         patientNoteDto.setNote("Rechute");
         List<PatientNoteDto> patientNoteDtoList = List.of(patientNoteDto);
         when(patientProxy.getPatientById(patientId)).thenReturn(patientDto);
-        when(patientNotesProxy.getPatientNotes(patientId)).thenReturn(patientNoteDtoList);
+        when(patientNotesProxy.getAllPatientNotesByPatientId(patientId)).thenReturn(patientNoteDtoList);
 
         // Act
         Report report = assessmentService.getPatientRiskLevel(patientId);
@@ -80,6 +80,6 @@ public class AssessmentServiceTest {
         assertEquals(patientId, report.getPatientDto().getId());
         assertNotEquals(RiskLevel.BORDERLINE, report.getRiskLevel());
         verify(patientProxy, times(1)).getPatientById(patientId);
-        verify(patientNotesProxy, times(1)).getPatientNotes(patientId);
+        verify(patientNotesProxy, times(1)).getAllPatientNotesByPatientId(patientId);
     }
 }

@@ -11,5 +11,6 @@ import java.util.List;
 public interface PatientNotesProxy {
 
     @GetMapping("/api/patient-notes/patient/{id}")
-    List<PatientNoteDto> getPatientNotes(@PathVariable("id") Long id);
+    List<PatientNoteDto> getAllPatientNotesByPatientId(@PathVariable("id") Long id);
 }
+

@@ -26,7 +26,7 @@ public class AssessmentService {
     public Report getPatientRiskLevel(Long id) {
         PatientDto patient = patientProxy.getPatientById(id);
         int age = AgeCalculator.calculateAge(patient.getBirthDate());
-        List<PatientNoteDto> patientNotes = patientNotesProxy.getPatientNotes(id);
+        List<PatientNoteDto> patientNotes = patientNotesProxy.getAllPatientNotesByPatientId(id);
         RiskLevel riskLevel = calculateRiskLevel(age, patient.getGender(), patientNotes);
         return new Report(patient, age, riskLevel);
     }
