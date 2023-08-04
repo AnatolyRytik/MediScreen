@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Notes</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="#" th:href="@{/}">MediScreen</a>
+  </div>
+</nav>
+<br>
+<div class="container">
+  <h2>Patient Notes</h2>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Note ID</th>
+      <th>Note</th>
+      <th>Creation Date</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="note : ${patientNotes}">
+      <td th:text="${note.id}"></td>
+      <td th:text="${note.note}"></td>
+      <td th:text="${note.creationDate}"></td>
+      <td>
+        <a th:href="@{/patients/notes/delete/{id}(id=${note.id})}" class="btn btn-danger"style="color: white;">Delete</a>
+        <a th:href="@{/patients/notes/edit/{id}(id=${note.id})}" class="btn btn-primary"style="color: white;">Edit</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

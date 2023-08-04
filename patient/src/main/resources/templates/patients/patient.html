@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Details</title>
-    <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
@@ -40,6 +39,8 @@
             <td></td>
             <td>
                 <a th:href="@{/patients/update/{id}(id=${patient.id})}" class="btn btn-primary"style="color: white;">Update</a>
+                <a th:href="@{/patients/notes/{id}(id=${patient.id})}" class="btn btn-primary"style="color: white;">View Notes</a>
+                <a th:href="@{/patients/assessment/{id}(id=${patient.id})}" class="btn btn-primary"style="color: white;">Assessment</a>
             </td>
         </tr>
         </tbody>
