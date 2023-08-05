@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
@@ -58,10 +59,10 @@ public class PatientServiceTests {
         when(patientRepository.findById(id)).thenReturn(Optional.of(patient));
 
         // Act
-        Patient retrievedPatient = patientService.getPatient(id);
+        PatientDto retrievedPatient = patientService.getPatient(id);
 
         // Assert
-        Assertions.assertEquals(patient, retrievedPatient);
+        Assertions.assertEquals(patientMapper.toDto(patient), retrievedPatient);
         verify(patientRepository, times(1)).findById(id);
     }
 
@@ -72,9 +73,7 @@ public class PatientServiceTests {
         when(patientRepository.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
-        Assertions.assertThrows(NotFoundException.class, () -> {
-            patientService.getPatient(id);
-        });
+        Assertions.assertThrows(NotFoundException.class, () -> patientService.getPatient(id));
         verify(patientRepository, times(1)).findById(id);
     }
 
@@ -82,10 +81,13 @@ public class PatientServiceTests {
     public void testGetAllPatients() {
         // Arrange
         List<Patient> patients = Arrays.asList(new Patient(), new Patient());
+        List<PatientDto> patientDtoList = patients.stream()
+                .map(patientMapper::toDto)
+                .collect(Collectors.toList());
         when(patientRepository.findAll()).thenReturn(patients);
 
         // Act
-        List<Patient> retrievedPatients = patientService.getAllPatients();
+        List<PatientDto> retrievedPatients = patientService.getAllPatients();
 
         // Assert
         Assertions.assertEquals(patients.size(), retrievedPatients.size());
@@ -121,9 +123,7 @@ public class PatientServiceTests {
         when(patientRepository.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
-        Assertions.assertThrows(NotFoundException.class, () -> {
-            patientService.updatePatient(id, patientDto);
-        });
+        Assertions.assertThrows(NotFoundException.class, () -> patientService.updatePatient(id, patientDto));
         verify(patientRepository, times(1)).findById(id);
     }
 
@@ -149,9 +149,7 @@ public class PatientServiceTests {
         when(patientRepository.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
-        Assertions.assertThrows(NotFoundException.class, () -> {
-            patientService.deletePatient(id);
-        });
+        Assertions.assertThrows(NotFoundException.class, () -> patientService.deletePatient(id));
         verify(patientRepository, times(1)).findById(id);
     }
 }

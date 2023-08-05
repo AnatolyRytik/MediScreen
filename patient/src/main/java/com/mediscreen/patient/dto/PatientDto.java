@@ -11,6 +11,9 @@ import java.time.LocalDate;
  */
 @Data
 public class PatientDto {
+
+    private Long id;
+
     @NotBlank
     private String firstName;
 

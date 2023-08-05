@@ -9,6 +9,9 @@ import java.util.List;
 @FeignClient(name = "notes-service", url = "${notes-service-url}")
 public interface NotesProxy {
 
+    @GetMapping("/api/patient-notes/{id}")
+    PatientNoteDto getPatientNoteById(@PathVariable("id") String id);
+
     @GetMapping("/api/patient-notes/patient/{patientId}")
     List<PatientNoteDto> getAllPatientNotesByPatientId(@PathVariable("patientId") Long patientId);
 

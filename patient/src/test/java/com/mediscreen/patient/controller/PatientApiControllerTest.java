@@ -68,8 +68,8 @@ public class PatientApiControllerTest {
     void getPatient_ExistingId_ReturnsPatient() throws Exception {
         // Arrange
         Long patientId = 1L;
-        Patient patient = new Patient();
-        patient.setId(patientId);
+        PatientDto patient = new PatientDto();
+        patient.setId(1L);
         patient.setFirstName("John");
         patient.setLastName("Doe");
         patient.setBirthDate(LocalDate.of(1990, 1, 1));
@@ -107,6 +107,7 @@ public class PatientApiControllerTest {
         patient1.setLastName("Doe");
         patient1.setBirthDate(LocalDate.of(1990, 1, 1));
         patient1.setGender("Male");
+        PatientDto patientDto1 = patientMapper.toDto(patient1);
 
         Patient patient2 = new Patient();
         patient2.setId(2L);
@@ -114,8 +115,10 @@ public class PatientApiControllerTest {
         patient2.setLastName("Smith");
         patient2.setBirthDate(LocalDate.of(1995, 5, 5));
         patient2.setGender("Female");
+        PatientDto patientDto2 = patientMapper.toDto(patient2);
 
-        List<Patient> patients = Arrays.asList(patient1, patient2);
+        List<PatientDto> patients = Arrays.asList(patientDto1, patientDto2);
+
 
         when(patientService.getAllPatients()).thenReturn(patients);
 
@@ -182,8 +185,7 @@ public class PatientApiControllerTest {
     void deletePatient_ExistingId_ReturnsNoContentResponse() throws Exception {
         // Arrange
         Long patientId = 1L;
-        Patient patient = new Patient();
-        patient.setId(patientId);
+        PatientDto patient = new PatientDto();
         when(patientService.getPatient(patientId)).thenReturn(patient);
 
         // Act & Assert

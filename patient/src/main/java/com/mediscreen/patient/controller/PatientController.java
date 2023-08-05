@@ -1,7 +1,9 @@
 package com.mediscreen.patient.controller;
 
 import com.mediscreen.patient.dto.PatientDto;
-import com.mediscreen.patient.model.Patient;
+import com.mediscreen.patient.dto.PatientNoteDto;
+import com.mediscreen.patient.proxy.AssessmentProxy;
+import com.mediscreen.patient.proxy.NotesProxy;
 import com.mediscreen.patient.service.PatientService;
 import com.mediscreen.patient.util.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,13 @@ import java.util.List;
 @RequestMapping("/patients")
 public class PatientController {
     private final PatientService patientService;
+    private final NotesProxy notesProxy;
+    private final AssessmentProxy assessmentProxy;
 
-    public PatientController(PatientService patientService) {
+    public PatientController(PatientService patientService, NotesProxy notesProxy, AssessmentProxy assessmentProxy) {
         this.patientService = patientService;
+        this.notesProxy = notesProxy;
+        this.assessmentProxy = assessmentProxy;
     }
 
     /**
@@ -67,8 +73,8 @@ public class PatientController {
     public String getPatient(Model model, @PathVariable("id") Long id) {
         log.info("Getting patient with ID: {}", id);
         try {
-            Patient patient = patientService.getPatient(id);
-            model.addAttribute("patient", patient);
+            PatientDto patientDto = patientService.getPatient(id);
+            model.addAttribute("patient", patientDto);
             return "patients/patient";
         } catch (NotFoundException e) {
             log.error("Patient not found with ID: {}", id);
@@ -86,7 +92,7 @@ public class PatientController {
     @GetMapping
     public String getAllPatients(Model model) {
         log.info("Getting all patients");
-        List<Patient> patients = patientService.getAllPatients();
+        List<PatientDto> patients = patientService.getAllPatients();
         model.addAttribute("patients", patients);
         return "patients/list";
     }
@@ -102,7 +108,7 @@ public class PatientController {
     public String showUpdateForm(Model model, @PathVariable("id") Long id) {
         log.info("Displaying update form for patient with ID: {}", id);
         try {
-            Patient patientDto = patientService.getPatient(id);
+            PatientDto patientDto = patientService.getPatient(id);
             model.addAttribute("patientDto", patientDto);
             return "patients/update";
         } catch (NotFoundException e) {
@@ -154,6 +160,67 @@ public class PatientController {
         } catch (NotFoundException e) {
             log.error("Patient not found with ID: {}", id);
             model.addAttribute("errorMessage", "Patient not found");
+            return "error";
+        }
+    }
+
+    @GetMapping("/{id}/notes")
+    public String getAllPatientNotes(Model model, @PathVariable("id") Long id) {
+        try {
+            List<PatientNoteDto> patientNotes = notesProxy.getAllPatientNotesByPatientId(id);
+            model.addAttribute("patientNotes", patientNotes);
+            return "patients/notes";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Patient not found");
+            return "error";
+        }
+    }
+
+    @GetMapping("/{id}/notes/add")
+    public String showAddNoteForm(Model model, @PathVariable("id") Long id) {
+        model.addAttribute("noteDto", new PatientNoteDto());
+        return "patients/add-note";
+    }
+
+    @PostMapping("/{id}/notes/add")
+    public String addNote(@PathVariable("id") Long id, @Valid @ModelAttribute("noteDto") PatientNoteDto noteDto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "patients/add-note";
+        }
+        noteDto.setPatientId(id);
+        notesProxy.createPatientNote(noteDto);
+        return "redirect:/patients/" + id + "/notes";
+    }
+
+    @GetMapping("/{id}/notes/update/{noteId}")
+    public String showUpdateNoteForm(Model model, @PathVariable("id") Long id, @PathVariable("noteId") String noteId) {
+        try {
+            PatientNoteDto noteDto = notesProxy.getPatientNoteById(noteId);
+            model.addAttribute("noteDto", noteDto);
+            return "patients/update-note";
+        } catch (NotFoundException e) {
+            model.addAttribute("errorMessage", "Note not found");
+            return "error";
+        }
+    }
+
+    @PostMapping("/{id}/notes/update/{noteId}")
+    public String updateNote(@PathVariable("id") Long id, @PathVariable("noteId") String noteId, @Valid @ModelAttribute("noteDto") PatientNoteDto noteDto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "patients/update-note";
+        }
+        noteDto.setPatientId(id);
+        notesProxy.updatePatientNote(noteId, noteDto);
+        return "redirect:/patients/" + id + "/notes";
+    }
+
+    @PostMapping("/{id}/notes/delete/{noteId}")
+    public String deleteNote(@PathVariable("id") Long id, @PathVariable("noteId") String noteId, Model model) {
+        try {
+            notesProxy.deletePatientNoteById(noteId);
+            return "redirect:/patients/" + id + "/notes";
+        } catch (NotFoundException e) {
+            model.addAttribute("errorMessage", "Note not found");
             return "error";
         }
     }

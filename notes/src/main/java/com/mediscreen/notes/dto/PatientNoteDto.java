@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 /**
  * Data Transfer Object (DTO) for Patient Notes.
@@ -15,6 +16,12 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatientNoteDto {
+
+    /**
+     * The ID of the note.
+     */
+    private String id;
+
     /**
      * The ID of the patient associated with this note.
      */
@@ -26,4 +33,14 @@ public class PatientNoteDto {
      */
     @NotBlank
     private String note;
+
+    /**
+     * The creation date of the note.
+     */
+    private LocalDate creationDate;
+
+    public PatientNoteDto(long patientId, String note) {
+        this.patientId = patientId;
+        this.note = note;
+    }
 }

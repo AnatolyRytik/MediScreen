@@ -30,15 +30,14 @@
             <td th:text="${patient.address}"></td>
             <td th:text="${patient.phoneNumber}"></td>
             <td>
-                <!-- Update button -->
-                <a th:href="@{/patients/{id}(id=${patient.id})}" class="btn btn-primary btn-sm" style="color: white;">View</a>
-                <!-- Delete button -->
-                <a th:href="@{/patients/delete/{id}(id=${patient.id})}" class="btn btn-danger btn-sm" style="color: white;">Delete</a>
+                <a class="btn btn-primary btn-sm" style="color: white;"
+                   th:href="@{'/patients/' + ${patient.id}}">View</a>
+                <a class="btn btn-danger btn-sm" style="color: white;" th:href="@{'/patients/delete/' + ${patient.id}}">Delete</a>
             </td>
         </tr>
         </tbody>
     </table>
-    <a th:href="@{/patients/add}" class="btn btn-primary" style="color: white;">Add Patient</a>
+    <a class="btn btn-primary" style="color: white;" th:href="@{/patients/add}">Add Patient</a>
 </div>
 
 
