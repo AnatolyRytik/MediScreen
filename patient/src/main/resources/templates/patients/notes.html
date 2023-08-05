@@ -8,14 +8,10 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container">
-    <a class="navbar-brand" href="#" th:href="@{/}">MediScreen</a>
-  </div>
-</nav>
 <br>
 <div class="container">
   <h2>Patient Notes</h2>
+  <a th:href="@{/patients/notes/new}" class="btn btn-primary mb-3"style="color: white;">Create New Note</a>
   <table class="table">
     <thead>
     <tr>

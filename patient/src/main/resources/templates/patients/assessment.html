@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Assessment</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<br>
+<div class="container">
+  <h2>Patient Assessment</h2>
+  <p>Patient ID: <span th:text="${patientReport.patient.id}"></span></p>
+  <p>Patient Age: <span th:text="${patientReport.age}"></span> years old</p>
+  <p>Patient Risk Level: <span th:text="${patientReport.riskLevel}"></span></p>
+</div>
+</body>
+</html>
