@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>All Patients</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg" style="background-color: white;">
+    <div class="container">
+        <a class="navbar-brand text-info" style="text-decoration: none;" th:href="@{/patients/all}">Return to patient
+            list</a>
+    </div>
+</nav>
 <div class="container">
     <h1>All Patients</h1>
 
@@ -31,7 +37,7 @@
             <td th:text="${patient.phoneNumber}"></td>
             <td>
                 <a class="btn btn-primary btn-sm" style="color: white;"
-                   th:href="@{'/patients/' + ${patient.id}}">View</a>
+                   th:href="@{'/patient/' + ${patient.id}}">View</a>
                 <a class="btn btn-danger btn-sm" style="color: white;" th:href="@{'/patients/delete/' + ${patient.id}}">Delete</a>
             </td>
         </tr>
