@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "assessment-service", url = "${assessment-service-url}")
 public interface AssessmentProxy {
-    @GetMapping("/api/assessments/{id}")
-    ReportDto getPatientRiskLevel(@PathVariable("id") Long id);
+    @GetMapping("/api/assessments/{patientId}")
+    ReportDto getPatientRiskLevel(@PathVariable("patientId") Long id);
 }

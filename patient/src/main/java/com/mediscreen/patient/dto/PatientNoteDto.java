@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 /**
- * Data Transfer Object (DTO) for Patient Notes.
+ * (DTO) for Patient Notes.
  * This class represents the data to create or update a patient note.
  */
 @Data

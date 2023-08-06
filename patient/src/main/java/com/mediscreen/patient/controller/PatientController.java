@@ -1,9 +1,9 @@
 package com.mediscreen.patient.controller;
 
 import com.mediscreen.patient.dto.PatientDto;
+import com.mediscreen.patient.dto.ReportDto;
 import com.mediscreen.patient.proxy.AssessmentProxy;
 import com.mediscreen.patient.service.PatientService;
-import com.mediscreen.patient.util.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,15 +67,9 @@ public class PatientController {
     @GetMapping("patient/{id}")
     public String getPatient(Model model, @PathVariable("id") Long id) {
         log.info("Getting patient with ID: {}", id);
-        try {
-            PatientDto patientDto = patientService.getPatient(id);
-            model.addAttribute("patient", patientDto);
-            return "patients/patient";
-        } catch (NotFoundException e) {
-            log.error("Patient not found with ID: {}", id);
-            model.addAttribute("errorMessage", "Patient not found");
-            return "error";
-        }
+        PatientDto patientDto = patientService.getPatient(id);
+        model.addAttribute("patient", patientDto);
+        return "patients/patient";
     }
 
     /**
@@ -102,15 +96,9 @@ public class PatientController {
     @GetMapping("patient/{id}/update")
     public String showUpdateForm(Model model, @PathVariable("id") Long id) {
         log.info("Displaying update form for patient with ID: {}", id);
-        try {
-            PatientDto patientDto = patientService.getPatient(id);
-            model.addAttribute("patientDto", patientDto);
-            return "patients/update";
-        } catch (NotFoundException e) {
-            log.error("Patient not found with ID: {}", id);
-            model.addAttribute("errorMessage", "Patient not found");
-            return "error";
-        }
+        PatientDto patientDto = patientService.getPatient(id);
+        model.addAttribute("patientDto", patientDto);
+        return "patients/update";
     }
 
     /**
@@ -126,17 +114,11 @@ public class PatientController {
     public String updatePatient(@PathVariable("id") Long id, @Valid @ModelAttribute("patientDto") PatientDto patientDto,
                                 BindingResult result, Model model) {
         log.info("Updating patient with ID: {}", id);
-        try {
-            if (result.hasErrors()) {
-                return "patients/update";
-            }
-            patientService.updatePatient(id, patientDto);
-            return "redirect:/patients/all";
-        } catch (NotFoundException e) {
-            log.error("Patient not found with ID: {}", id);
-            model.addAttribute("errorMessage", "Patient not found");
-            return "error";
+        if (result.hasErrors()) {
+            return "patients/update";
         }
+        patientService.updatePatient(id, patientDto);
+        return "redirect:/patients/all";
     }
 
     /**
@@ -149,13 +131,24 @@ public class PatientController {
     @RequestMapping("patients/delete/{id}")
     public String deletePatient(@PathVariable("id") Long id, Model model) {
         log.info("Deleting patient with ID: {}", id);
-        try {
-            patientService.deletePatient(id);
-            return "redirect:/patients/all";
-        } catch (NotFoundException e) {
-            log.error("Patient not found with ID: {}", id);
-            model.addAttribute("errorMessage", "Patient not found");
-            return "error";
-        }
+        patientService.deletePatient(id);
+        return "redirect:/patients/all";
     }
+
+    /**
+     * Retrieves the assessment for a patient by ID.
+     *
+     * @param model     the Thymeleaf model
+     * @param patientId the ID of the patient to retrieve the assessment for
+     * @return the view name for displaying the patient assessment, or the error page if the patient is not found
+     */
+    @GetMapping("patient/assessment/{patientId}")
+    public String getPatientAssessment(Model model, @PathVariable("patientId") Long patientId) {
+        log.info("Getting assessment for patient with ID: {}", patientId);
+        ReportDto report = assessmentProxy.getPatientRiskLevel(patientId);
+        model.addAttribute("patient", report.getPatientDto());
+        model.addAttribute("patientReport", report);
+        return "patients/assessment";
+    }
+
 }

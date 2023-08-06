@@ -2,16 +2,32 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Error</title>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg" style="background-color: white;">
+    <div class="container">
+        <a class="navbar-brand text-info" style="text-decoration: none;" th:href="@{/patients/all}">Return to patient
+            list</a>
+    </div>
+</nav>
 <div class="container">
     <h2>Error</h2>
     <div class="alert alert-danger">
         <p th:text="${errorMessage}"></p>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="error-template">
+                    <div class="error-details">
+                        Sorry, an error has occurred!
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>

@@ -16,7 +16,10 @@
 <br>
 <div class="container">
     <h2>Patient Assessment</h2>
-    <p>Patient ID: <span th:text="${patientReport.patient.id}"></span></p>
+    <p>Patient First Name: <span th:text="${patient.firstName}"></span></p>
+    <p>Patient Last Name: <span th:text="${patient.lastName}"></span></p>
+    <p>Patient Birth Date: <span th:text="${patient.birthDate}"></span></p>
+    <p>Patient Gender: <span th:text="${patient.gender}"></span></p>
     <p>Patient Age: <span th:text="${patientReport.age}"></span> years old</p>
     <p>Patient Risk Level: <span th:text="${patientReport.riskLevel}"></span></p>
 </div>
