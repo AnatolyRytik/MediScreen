@@ -1,5 +1,6 @@
 package com.mediscreen.notes.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,23 +21,25 @@ public class PatientNoteDto {
     /**
      * The ID of the note.
      */
+    @JsonIgnore
     private String id;
 
     /**
      * The ID of the patient associated with this note.
      */
-    @NotNull
+    @NotNull(message = "Patient ID cannot be null")
     private Long patientId;
 
     /**
      * The content of the patient note.
      */
-    @NotBlank
+    @NotBlank(message = "Note content cannot be blank")
     private String note;
 
     /**
      * The creation date of the note.
      */
+    @JsonIgnore
     private LocalDate creationDate;
 
     public PatientNoteDto(long patientId, String note) {
