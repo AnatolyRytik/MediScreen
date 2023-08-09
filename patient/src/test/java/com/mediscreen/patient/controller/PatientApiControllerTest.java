@@ -47,7 +47,7 @@ public class PatientApiControllerTest {
         PatientDto patientDto = new PatientDto();
         patientDto.setFirstName("John");
         patientDto.setLastName("Doe");
-        patientDto.setGender("Male");
+        patientDto.setGender("M");
 
         Patient createdPatient = patientMapper.toEntity(patientDto);
         createdPatient.setId(1L);
@@ -142,13 +142,13 @@ public class PatientApiControllerTest {
         PatientDto patientDto = new PatientDto();
         patientDto.setFirstName("Updated");
         patientDto.setLastName("Patient");
-        patientDto.setGender("Male");
+        patientDto.setGender("M");
 
         Patient existingPatient = new Patient();
         existingPatient.setId(patientId);
         existingPatient.setFirstName("John");
         existingPatient.setLastName("Doe");
-        existingPatient.setGender("Male");
+        existingPatient.setGender("M");
         Patient updatedPatient = patientMapper.toEntity(patientDto);
         updatedPatient.setId(patientId);
         when(patientService.updatePatient(patientId, patientDto)).thenReturn(updatedPatient);
@@ -171,7 +171,7 @@ public class PatientApiControllerTest {
         PatientDto patientDto = new PatientDto();
         patientDto.setFirstName("Updated");
         patientDto.setLastName("Patient");
-        patientDto.setGender("Male");
+        patientDto.setGender("M");
         when(patientService.updatePatient(patientId, patientDto)).thenThrow(new NotFoundException("Patient not found"));
 
         // Act & Assert
