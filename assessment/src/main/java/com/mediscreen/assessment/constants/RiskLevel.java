@@ -2,6 +2,9 @@ package com.mediscreen.assessment.constants;
 
 import lombok.Getter;
 
+/**
+ * Enum representing the various risk levels for patients.
+ */
 @Getter
 public enum RiskLevel {
     NONE("None"),

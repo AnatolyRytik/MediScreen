@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
+/**
+ * DTO class for representing a patient's note.
+ */
 @Data
 public class PatientNoteDto {
     private String id;

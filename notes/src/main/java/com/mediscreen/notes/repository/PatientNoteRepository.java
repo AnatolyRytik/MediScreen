@@ -11,6 +11,7 @@ import java.util.List;
  */
 @Repository
 public interface PatientNoteRepository extends MongoRepository<PatientNote, String> {
+
     /**
      * Get all patient notes for a specific patient.
      *

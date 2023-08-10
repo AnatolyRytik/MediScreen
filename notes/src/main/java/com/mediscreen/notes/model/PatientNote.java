@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
+/**
+ * Model class for Patient Notes.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

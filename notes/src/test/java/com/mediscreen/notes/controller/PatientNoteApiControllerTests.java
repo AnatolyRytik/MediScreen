@@ -3,7 +3,6 @@ package com.mediscreen.notes.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mediscreen.notes.dto.PatientNoteDto;
 import com.mediscreen.notes.model.PatientNote;
-import com.mediscreen.notes.proxy.PatientProxy;
 import com.mediscreen.notes.service.PatientNoteService;
 import com.mediscreen.notes.util.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;

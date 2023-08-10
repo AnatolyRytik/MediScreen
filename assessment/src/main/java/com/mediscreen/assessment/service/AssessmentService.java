@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service class for assessing a patient's risk level based on patient data and notes.
+ */
 @Service
 public class AssessmentService {
 
@@ -23,6 +26,12 @@ public class AssessmentService {
         this.patientNotesProxy = patientNotesProxy;
     }
 
+    /**
+     * Determines the risk level for a patient based on their age, gender, and notes.
+     *
+     * @param id The ID of the patient to assess.
+     * @return A {@link Report} object containing the patient's details and their assessed risk level.
+     */
     public Report getPatientRiskLevel(Long id) {
         PatientDto patient = patientProxy.getPatientById(id);
         int age = AgeCalculator.calculateAge(patient.getBirthDate());
@@ -31,6 +40,15 @@ public class AssessmentService {
         return new Report(patient, age, riskLevel);
     }
 
+    /**
+     * Calculates the risk level based on the age, gender, and the number of trigger terms
+     * found in the patient's notes.
+     *
+     * @param age          The age of the patient.
+     * @param gender       The gender of the patient.
+     * @param patientNotes The notes associated with the patient.
+     * @return A {@link RiskLevel} enum value representing the determined risk level.
+     */
     private RiskLevel calculateRiskLevel(int age, String gender, List<PatientNoteDto> patientNotes) {
         int triggerTermCount = 0;
 

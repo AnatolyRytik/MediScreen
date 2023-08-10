@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller responsible for managing patient risk assessments.
+ */
 @RestController
 @RequestMapping("/api/assessments")
 @Tag(name = "Assessments")
@@ -30,6 +33,12 @@ public class AssessmentController {
         this.assessmentService = assessmentService;
     }
 
+    /**
+     * Retrieves the risk level for a patient by their ID.
+     *
+     * @param id The ID of the patient.
+     * @return A ResponseEntity containing the risk report or an error message.
+     */
     @Operation(description = "Get patient risk level")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",

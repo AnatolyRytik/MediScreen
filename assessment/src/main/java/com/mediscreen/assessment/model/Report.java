@@ -6,6 +6,9 @@ import com.mediscreen.assessment.dto.PatientDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * Model class for representing a assessment report.
+ */
 @Data
 @AllArgsConstructor
 public class Report {

@@ -5,6 +5,9 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+/**
+ * Model class for the patient.
+ */
 @Data
 @Entity
 @Table(name = "patients")

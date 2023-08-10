@@ -2,6 +2,9 @@ package com.mediscreen.assessment.constants;
 
 import lombok.Getter;
 
+/**
+ * Enum representing various trigger terms related to patient risk assessments.
+ */
 @Getter
 public enum TriggerTerms {
     HEMOGLOBINE_A1C("Hémoglobine A1C"),
