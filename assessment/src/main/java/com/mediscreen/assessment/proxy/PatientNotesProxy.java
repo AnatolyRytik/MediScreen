@@ -12,7 +12,7 @@ import java.util.List;
  * <p>
  * This interface uses Feign to simplify HTTP communication between microservices.
  */
-@FeignClient(name = "patient-note-microservice", url = "localhost:8082")
+@FeignClient(name = "notes-service", url = "${notes-service-url}")
 public interface PatientNotesProxy {
 
     /**

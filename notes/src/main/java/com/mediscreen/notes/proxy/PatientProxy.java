@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * <p>
  * This interface uses Feign to simplify HTTP communication between microservices.
  */
-@FeignClient(name = "patient-microservice", url = "localhost:8080")
+@FeignClient(name = "patient-service", url = "${patient-service-url}")
 public interface PatientProxy {
 
     /**
