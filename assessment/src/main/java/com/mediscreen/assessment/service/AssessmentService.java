@@ -54,7 +54,7 @@ public class AssessmentService {
 
         for (PatientNoteDto note : patientNotes) {
             for (TriggerTerms term : TriggerTerms.values()) {
-                if (note.getNote().contains(term.getTriggerTerm())) {
+                if (note.getNote().toLowerCase().contains(term.getTriggerTerm().toLowerCase())) {
                     triggerTermCount++;
                 }
             }
