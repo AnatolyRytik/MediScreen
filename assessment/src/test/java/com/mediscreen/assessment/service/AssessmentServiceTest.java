@@ -40,7 +40,6 @@ public class AssessmentServiceTest {
         // Arrange
         Long patientId = 1L;
         PatientDto patientDto = new PatientDto();
-        patientDto.setId(patientId);
         patientDto.setBirthDate(LocalDate.now().minusYears(35));
         patientDto.setGender("M");
         PatientNoteDto patientNoteDto = new PatientNoteDto();
@@ -53,7 +52,6 @@ public class AssessmentServiceTest {
         Report report = assessmentService.getPatientRiskLevel(patientId);
 
         // Assert
-        assertEquals(patientId, report.getPatientDto().getId());
         assertEquals(RiskLevel.NONE, report.getRiskLevel());
         verify(patientProxy, times(1)).getPatientById(patientId);
         verify(patientNotesProxy, times(1)).getAllPatientNotesByPatientId(patientId);
@@ -64,7 +62,6 @@ public class AssessmentServiceTest {
         // Arrange
         Long patientId = 1L;
         PatientDto patientDto = new PatientDto();
-        patientDto.setId(patientId);
         patientDto.setBirthDate(LocalDate.now().minusYears(35));
         patientDto.setGender("M");
         PatientNoteDto patientNoteDto = new PatientNoteDto();
@@ -77,7 +74,6 @@ public class AssessmentServiceTest {
         Report report = assessmentService.getPatientRiskLevel(patientId);
 
         // Assert
-        assertEquals(patientId, report.getPatientDto().getId());
         assertNotEquals(RiskLevel.BORDERLINE, report.getRiskLevel());
         verify(patientProxy, times(1)).getPatientById(patientId);
         verify(patientNotesProxy, times(1)).getAllPatientNotesByPatientId(patientId);

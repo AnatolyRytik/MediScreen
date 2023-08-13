@@ -82,7 +82,7 @@ public class PatientApiController {
     public ResponseEntity<?> getPatient(@PathVariable @Min(1) Long id) {
         log.info("Getting patient with ID: {}", id);
         try {
-            PatientDto patient = patientService.getPatient(id);
+            Patient patient = patientService.getPatient(id);
             return ResponseEntity.ok(patient);
         } catch (NotFoundException e) {
             log.error("Patient not found with ID: {}", id);
@@ -101,9 +101,9 @@ public class PatientApiController {
                     content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PatientDto.class))))
     })
     @GetMapping
-    public ResponseEntity<List<PatientDto>> getAllPatients() {
+    public ResponseEntity<List<Patient>> getAllPatients() {
         log.info("Getting all patients");
-        List<PatientDto> patients = patientService.getAllPatients();
+        List<Patient> patients = patientService.getAllPatients();
         return ResponseEntity.ok(patients);
     }
 

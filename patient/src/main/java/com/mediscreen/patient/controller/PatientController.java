@@ -2,6 +2,7 @@ package com.mediscreen.patient.controller;
 
 import com.mediscreen.patient.dto.PatientDto;
 import com.mediscreen.patient.dto.ReportDto;
+import com.mediscreen.patient.model.Patient;
 import com.mediscreen.patient.proxy.AssessmentProxy;
 import com.mediscreen.patient.service.PatientService;
 import lombok.extern.slf4j.Slf4j;
@@ -67,8 +68,8 @@ public class PatientController {
     @GetMapping("patient/{id}")
     public String getPatient(Model model, @PathVariable("id") Long id) {
         log.info("Getting patient with ID: {}", id);
-        PatientDto patientDto = patientService.getPatient(id);
-        model.addAttribute("patient", patientDto);
+        Patient patient = patientService.getPatient(id);
+        model.addAttribute("patient", patient);
         return "patients/patient";
     }
 
@@ -81,7 +82,7 @@ public class PatientController {
     @GetMapping("patients/all")
     public String getAllPatients(Model model) {
         log.info("Getting all patients");
-        List<PatientDto> patients = patientService.getAllPatients();
+        List<Patient> patients = patientService.getAllPatients();
         model.addAttribute("patients", patients);
         return "patients/all";
     }
@@ -96,8 +97,8 @@ public class PatientController {
     @GetMapping("patient/{id}/update")
     public String showUpdateForm(Model model, @PathVariable("id") Long id) {
         log.info("Displaying update form for patient with ID: {}", id);
-        PatientDto patientDto = patientService.getPatient(id);
-        model.addAttribute("patientDto", patientDto);
+        Patient patient = patientService.getPatient(id);
+        model.addAttribute("patientDto", patient);
         return "patients/update";
     }
 

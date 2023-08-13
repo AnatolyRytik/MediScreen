@@ -15,8 +15,6 @@ import java.time.LocalDate;
 @Data
 public class PatientDto {
 
-    private Long id;
-
     @NotBlank(message = "First name cannot be blank")
     @Size(max = 255, message = "First name cannot exceed 255 characters")
     private String firstName;

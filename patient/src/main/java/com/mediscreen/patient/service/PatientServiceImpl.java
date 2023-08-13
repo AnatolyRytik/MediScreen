@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of the PatientService interface.
@@ -34,22 +33,18 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public PatientDto getPatient(Long id) {
+    public Patient getPatient(Long id) {
         log.info("Getting patient with ID: {}", id);
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found with ID: " + id));
-        PatientDto patientDto = patientMapper.toDto(patient);
-        return patientDto;
+        return patient;
     }
 
     @Override
-    public List<PatientDto> getAllPatients() {
+    public List<Patient> getAllPatients() {
         log.info("Getting all patients");
         List<Patient> patientList = patientRepository.findAll();
-        List<PatientDto> patientDtoList = patientList.stream()
-                .map(patientMapper::toDto)
-                .collect(Collectors.toList());
-        return patientDtoList;
+        return patientList;
     }
 
     @Override

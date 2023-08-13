@@ -42,7 +42,6 @@ public class AssessmentControllerTests {
         // Arrange
         Long id = 1L;
         PatientDto patientDto = new PatientDto();
-        patientDto.setId(id);
 
         Report report = new Report(patientDto, 25, RiskLevel.BORDERLINE);
         when(assessmentService.getPatientRiskLevel(id)).thenReturn(report);
@@ -51,7 +50,6 @@ public class AssessmentControllerTests {
         mockMvc.perform(get("/api/assessments/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.patientDto.id").value(id))
                 .andExpect(jsonPath("$.age").value(25))
                 .andExpect(jsonPath("$.riskLevel").value("BORDERLINE"));
     }

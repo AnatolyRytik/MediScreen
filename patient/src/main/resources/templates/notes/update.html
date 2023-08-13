@@ -9,8 +9,8 @@
 <body>
 <nav class="navbar navbar-expand-lg" style="background-color: white;">
     <div class="container">
-        <a class="navbar-brand text-info" style="text-decoration: none;" th:href="@{/patients/all}">Return to patient
-            list</a>
+        <a class="navbar-brand text-info d-block" style="text-decoration: none;" th:href="@{/patients/all}">Return to patient list</a>
+        <a class="navbar-brand text-info d-block" style="text-decoration: none;" th:href="@{/patient/{patientId}(patientId=${patientId})}">Return to Patient</a>
     </div>
 </nav>
 <br>

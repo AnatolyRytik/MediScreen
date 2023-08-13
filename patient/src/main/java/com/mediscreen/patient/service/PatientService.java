@@ -23,14 +23,14 @@ public interface PatientService {
      * @param id the ID of the patient
      * @return the patient with the specified ID
      */
-    PatientDto getPatient(Long id);
+    Patient getPatient(Long id);
 
     /**
      * Get all patients.
      *
      * @return a list of all patients
      */
-    List<PatientDto> getAllPatients();
+    List<Patient> getAllPatients();
 
     /**
      * Update a patient by ID.

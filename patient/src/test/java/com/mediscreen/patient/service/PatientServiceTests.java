@@ -61,10 +61,10 @@ public class PatientServiceTests {
         when(patientRepository.findById(id)).thenReturn(Optional.of(patient));
 
         // Act
-        PatientDto retrievedPatient = patientService.getPatient(id);
+        Patient retrievedPatient = patientService.getPatient(id);
 
         // Assert
-        Assertions.assertEquals(patientMapper.toDto(patient), retrievedPatient);
+        Assertions.assertEquals(patient, retrievedPatient);
         verify(patientRepository, times(1)).findById(id);
     }
 
@@ -89,7 +89,7 @@ public class PatientServiceTests {
         when(patientRepository.findAll()).thenReturn(patients);
 
         // Act
-        List<PatientDto> retrievedPatients = patientService.getAllPatients();
+        List<Patient> retrievedPatients = patientService.getAllPatients();
 
         // Assert
         Assertions.assertEquals(patients.size(), retrievedPatients.size());

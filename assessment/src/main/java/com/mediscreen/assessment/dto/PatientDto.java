@@ -10,8 +10,6 @@ import java.time.LocalDate;
 @Data
 public class PatientDto {
 
-    private Long id;
-
     private String firstName;
 
     private String lastName;

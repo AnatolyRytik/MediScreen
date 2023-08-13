@@ -70,12 +70,12 @@ public class PatientApiControllerTest {
     void getPatient_ExistingId_ReturnsPatient() throws Exception {
         // Arrange
         Long patientId = 1L;
-        PatientDto patient = new PatientDto();
-        patient.setId(1L);
-        patient.setFirstName("John");
-        patient.setLastName("Doe");
-        patient.setBirthDate(LocalDate.of(1990, 1, 1));
-        patient.setGender("Male");
+        PatientDto patientDto = new PatientDto();
+        patientDto.setFirstName("John");
+        patientDto.setLastName("Doe");
+        patientDto.setBirthDate(LocalDate.of(1990, 1, 1));
+        patientDto.setGender("Male");
+        Patient patient = patientMapper.toEntity(patientDto);
 
         when(patientService.getPatient(patientId)).thenReturn(patient);
 
@@ -83,7 +83,6 @@ public class PatientApiControllerTest {
         mockMvc.perform(get("/api/patients/{id}", patientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(patientId))
                 .andExpect(jsonPath("$.firstName").value("John"))
                 .andExpect(jsonPath("$.lastName").value("Doe"));
     }
@@ -109,7 +108,6 @@ public class PatientApiControllerTest {
         patient1.setLastName("Doe");
         patient1.setBirthDate(LocalDate.of(1990, 1, 1));
         patient1.setGender("Male");
-        PatientDto patientDto1 = patientMapper.toDto(patient1);
 
         Patient patient2 = new Patient();
         patient2.setId(2L);
@@ -117,9 +115,8 @@ public class PatientApiControllerTest {
         patient2.setLastName("Smith");
         patient2.setBirthDate(LocalDate.of(1995, 5, 5));
         patient2.setGender("Female");
-        PatientDto patientDto2 = patientMapper.toDto(patient2);
 
-        List<PatientDto> patients = Arrays.asList(patientDto1, patientDto2);
+        List<Patient> patients = Arrays.asList(patient1, patient2);
 
 
         when(patientService.getAllPatients()).thenReturn(patients);
@@ -129,7 +126,6 @@ public class PatientApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].firstName").value("John"))
                 .andExpect(jsonPath("$[0].lastName").value("Doe"))
                 .andExpect(jsonPath("$[1].id").value(2L))
@@ -187,7 +183,7 @@ public class PatientApiControllerTest {
     void deletePatient_ExistingId_ReturnsNoContentResponse() throws Exception {
         // Arrange
         Long patientId = 1L;
-        PatientDto patient = new PatientDto();
+        Patient patient = new Patient();
         when(patientService.getPatient(patientId)).thenReturn(patient);
 
         // Act & Assert
