@@ -2,15 +2,15 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Update Patient</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<!-- create navigation bar on top: Bootstrap 4.3.1 Header -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg" style="background-color: white;">
     <div class="container">
-        <a class="navbar-brand" href="#" th:href="@{/}">MediScreen</a>
+        <a class="navbar-brand text-info" style="text-decoration: none;" th:href="@{/patients/all}">Return to patient
+            list</a>
     </div>
 </nav>
 <br>
@@ -18,44 +18,55 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h2>Update Patient</h2>
-            <form th:action="@{/patients/update/{id}(id=${patientDto.id})}" method="post" th:object="${patientDto}">
-                <input type="hidden" th:field="*{id}">
+            <form method="post" th:action="@{/patient/{id}/update/(id=${patientDto.id})}" th:object="${patientDto}">
+                <input th:field="*{id}" type="hidden">
                 <div class="form-group">
                     <label for="firstName">First Name</label>
-                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}"
-                           placeholder="Enter first name" required>
+                    <input class="form-control" id="firstName" placeholder="Enter first name" required
+                           th:field="*{firstName}" type="text">
                 </div>
                 <div class="form-group">
                     <label for="lastName">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}"
-                           placeholder="Enter last name" required>
+                    <input class="form-control" id="lastName" placeholder="Enter last name" required
+                           th:field="*{lastName}" type="text">
                 </div>
                 <div class="form-group">
                     <label for="birthDate">Birth Date</label>
-                    <input type="date" class="form-control" th:value="*{birthDate}" id="birthDate" name="birthDate" required>
+                    <input class="form-control" id="birthDate" name="birthDate" required th:value="*{birthDate}"
+                           type="date">
                     <script>
                         var currentDate = new Date().toISOString().split("T")[0];
                         document.getElementById("birthDate").setAttribute("max", currentDate);
+
+
+
+
+
+
+
+
                     </script>
                 </div>
                 <div class="form-group">
                     <label for="gender">Gender:</label>
                     <select class="form-control" id="gender" name="gender" th:required="required">
-                        <option value="M" th:selected="${patientDto.gender == 'M'}">Male</option>
-                        <option value="F" th:selected="${patientDto.gender == 'F'}">Female</option>
+                        <option th:selected="${patientDto.gender == 'M'}" value="M">Male</option>
+                        <option th:selected="${patientDto.gender == 'F'}" value="F">Female</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="address">Address</label>
-                    <input type="text" class="form-control" id="address" th:field="*{address}"
-                           placeholder="Enter address">
+                    <input class="form-control" id="address" placeholder="Enter address" th:field="*{address}"
+                           type="text">
                 </div>
                 <div class="form-group">
                     <label for="phoneNumber">Phone Number:</label>
-                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber"
-                           th:value="*{phoneNumber}" pattern="[0-9+-]+" required>
+                    <input class="form-control" id="phoneNumber" name="phoneNumber" pattern="\d{8,12}" required
+                           th:value="*{phoneNumber}" title="Please enter a valid phone number with 8 to 12 digits."
+                           type="text">
+
                 </div>
-                <button type="submit" class="btn btn-primary">Update Patient</button>
+                <button class="btn btn-primary" type="submit">Update Patient</button>
             </form>
         </div>
     </div>

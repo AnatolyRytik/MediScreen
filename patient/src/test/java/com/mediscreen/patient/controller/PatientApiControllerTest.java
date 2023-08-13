@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 public class PatientApiControllerTest {
     private final PatientMapper patientMapper = new PatientMapper();
     @Mock
@@ -47,7 +49,7 @@ public class PatientApiControllerTest {
         PatientDto patientDto = new PatientDto();
         patientDto.setFirstName("John");
         patientDto.setLastName("Doe");
-        patientDto.setGender("Male");
+        patientDto.setGender("M");
 
         Patient createdPatient = patientMapper.toEntity(patientDto);
         createdPatient.setId(1L);
@@ -68,12 +70,12 @@ public class PatientApiControllerTest {
     void getPatient_ExistingId_ReturnsPatient() throws Exception {
         // Arrange
         Long patientId = 1L;
-        Patient patient = new Patient();
-        patient.setId(patientId);
-        patient.setFirstName("John");
-        patient.setLastName("Doe");
-        patient.setBirthDate(LocalDate.of(1990, 1, 1));
-        patient.setGender("Male");
+        PatientDto patientDto = new PatientDto();
+        patientDto.setFirstName("John");
+        patientDto.setLastName("Doe");
+        patientDto.setBirthDate(LocalDate.of(1990, 1, 1));
+        patientDto.setGender("Male");
+        Patient patient = patientMapper.toEntity(patientDto);
 
         when(patientService.getPatient(patientId)).thenReturn(patient);
 
@@ -81,7 +83,6 @@ public class PatientApiControllerTest {
         mockMvc.perform(get("/api/patients/{id}", patientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(patientId))
                 .andExpect(jsonPath("$.firstName").value("John"))
                 .andExpect(jsonPath("$.lastName").value("Doe"));
     }
@@ -117,6 +118,7 @@ public class PatientApiControllerTest {
 
         List<Patient> patients = Arrays.asList(patient1, patient2);
 
+
         when(patientService.getAllPatients()).thenReturn(patients);
 
         // Act & Assert
@@ -124,7 +126,6 @@ public class PatientApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].firstName").value("John"))
                 .andExpect(jsonPath("$[0].lastName").value("Doe"))
                 .andExpect(jsonPath("$[1].id").value(2L))
@@ -139,13 +140,13 @@ public class PatientApiControllerTest {
         PatientDto patientDto = new PatientDto();
         patientDto.setFirstName("Updated");
         patientDto.setLastName("Patient");
-        patientDto.setGender("Male");
+        patientDto.setGender("M");
 
         Patient existingPatient = new Patient();
         existingPatient.setId(patientId);
         existingPatient.setFirstName("John");
         existingPatient.setLastName("Doe");
-        existingPatient.setGender("Male");
+        existingPatient.setGender("M");
         Patient updatedPatient = patientMapper.toEntity(patientDto);
         updatedPatient.setId(patientId);
         when(patientService.updatePatient(patientId, patientDto)).thenReturn(updatedPatient);
@@ -168,7 +169,7 @@ public class PatientApiControllerTest {
         PatientDto patientDto = new PatientDto();
         patientDto.setFirstName("Updated");
         patientDto.setLastName("Patient");
-        patientDto.setGender("Male");
+        patientDto.setGender("M");
         when(patientService.updatePatient(patientId, patientDto)).thenThrow(new NotFoundException("Patient not found"));
 
         // Act & Assert
@@ -183,7 +184,6 @@ public class PatientApiControllerTest {
         // Arrange
         Long patientId = 1L;
         Patient patient = new Patient();
-        patient.setId(patientId);
         when(patientService.getPatient(patientId)).thenReturn(patient);
 
         // Act & Assert

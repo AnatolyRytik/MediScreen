@@ -12,12 +12,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/patient-notes")
@@ -50,20 +53,40 @@ public class PatientNoteApiController {
     /**
      * Create a new patient note.
      *
-     * @param patientNoteDto the patient note data
-     * @return the created patient note
+     * @param patientNoteDto the patient note data transfer object
+     * @param bindingResult  results of the validation on the patientNoteDto
+     * @return ResponseEntity with the created patient note details, or an error message if patient not found or validation errors occur
      */
     @Operation(description = "Create a new patient note")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Patient note created",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientNote.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientNote.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request due to validation errors",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Patient not found for the note",
+                    content = @Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<PatientNote> createPatientNote(@Valid @RequestBody PatientNoteDto patientNoteDto) {
+    public ResponseEntity<?> createPatientNote(@Valid @RequestBody PatientNoteDto patientNoteDto, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.toList());
+            log.error("Validation errors occurred: {}", errors);
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         log.info("Creating a new patient note: {}", patientNoteDto);
-        PatientNote createdPatientNote = patientNoteService.createPatientNote(patientNoteDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPatientNote);
+        try {
+            PatientNote createdPatientNote = patientNoteService.createPatientNote(patientNoteDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdPatientNote);
+        } catch (NotFoundException e) {
+            log.error("Patient not found with ID: {}", patientNoteDto.getPatientId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
+
 
     /**
      * Get a patient note by ID.
@@ -102,28 +125,48 @@ public class PatientNoteApiController {
                     content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PatientNote.class))))
     })
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<PatientNote>> getAllPatientNotesByPatientId(@PathVariable Long patientId) {
+    public ResponseEntity<?> getAllPatientNotesByPatientId(@PathVariable Long patientId) {
         log.info("Getting all patient notes for patient with ID: {}", patientId);
-        List<PatientNote> patientNotes = patientNoteService.getAllPatientNotesByPatientId(patientId);
-        return ResponseEntity.ok(patientNotes);
+        try {
+            List<PatientNote> patientNotes = patientNoteService.getAllPatientNotesByPatientId(patientId);
+            return ResponseEntity.ok(patientNotes);
+        } catch (NotFoundException e) {
+            log.error("Patient not found with ID: {}", patientId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
     /**
      * Update a patient note by ID.
      *
-     * @param id             the patient note ID
-     * @param patientNoteDto the updated patient note data
-     * @return the updated patient note if found, or an error message if not found
+     * @param id             the unique identifier of the patient note to be updated
+     * @param patientNoteDto the patient note data transfer object containing the updated details
+     * @param bindingResult  results of the validation on the patientNoteDto
+     * @return ResponseEntity with the updated patient note details if found, or an error message if not found or validation errors occur
      */
     @Operation(description = "Update a patient note by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Patient note updated",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientNote.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request due to validation errors",
+                    content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Patient note not found",
                     content = @Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePatientNote(@PathVariable String id, @Valid @RequestBody PatientNoteDto patientNoteDto) {
+    public ResponseEntity<?> updatePatientNote(@PathVariable String id,
+                                               @Valid @RequestBody PatientNoteDto patientNoteDto,
+                                               BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.toList());
+            log.error("Validation errors occurred: {}", errors);
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         log.info("Updating patient note with ID: {}", id);
         try {
             PatientNote updatedPatientNote = patientNoteService.updatePatientNote(id, patientNoteDto);
@@ -133,6 +176,7 @@ public class PatientNoteApiController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
     /**
      * Delete a patient note by ID.
@@ -146,14 +190,14 @@ public class PatientNoteApiController {
             @ApiResponse(responseCode = "404", description = "Patient note not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatientNote(@PathVariable String id) {
+    public ResponseEntity<?> deletePatientNote(@PathVariable String id) {
         log.info("Deleting patient note with ID: {}", id);
         try {
             patientNoteService.deletePatientNoteById(id);
             return ResponseEntity.noContent().build();
         } catch (NotFoundException e) {
             log.error("Patient note not found with ID: {}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }

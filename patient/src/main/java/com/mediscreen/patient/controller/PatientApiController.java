@@ -12,13 +12,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/patients")
@@ -34,20 +37,32 @@ public class PatientApiController {
     /**
      * Create a new patient.
      *
-     * @param patientDto the patient data
-     * @return the created patient
+     * @param patientDto    the patient data transfer object containing details of the patient
+     * @param bindingResult results of the validation on the patientDto
+     * @return the created patient or a list of validation error messages
      */
+
     @Operation(description = "Create a new patient")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Patient created",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientDto.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<Patient> createPatient(@Valid @RequestBody PatientDto patientDto) {
+    public ResponseEntity<?> createPatient(@Valid @RequestBody PatientDto patientDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getFieldErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+
         log.info("Creating a new patient: {}", patientDto);
         Patient createdPatient = patientService.createPatient(patientDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPatient);
     }
+
 
     /**
      * Get a patient by ID.
@@ -95,19 +110,33 @@ public class PatientApiController {
     /**
      * Update a patient by ID.
      *
-     * @param id         the patient ID
-     * @param patientDto the updated patient data
-     * @return the updated patient if found, or an error message if not found
+     * @param id            the unique identifier of the patient to be updated
+     * @param patientDto    the patient data transfer object containing the updated details of the patient
+     * @param bindingResult results of the validation on the patientDto
+     * @return ResponseEntity with the updated patient details if found, or an error message if not found or validation errors occur
      */
     @Operation(description = "Update a patient by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Patient updated",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientDto.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request due to validation errors",
+                    content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Patient not found",
                     content = @Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePatient(@PathVariable @Min(1) Long id, @Valid @RequestBody PatientDto patientDto) {
+    public ResponseEntity<?> updatePatient(@PathVariable @Min(1) Long id,
+                                           @Valid @RequestBody PatientDto patientDto,
+                                           BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.toList());
+            log.error("Validation errors occurred: {}", errors);
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         log.info("Updating patient with ID: {}", id);
         try {
             Patient updatedPatient = patientService.updatePatient(id, patientDto);
@@ -117,6 +146,7 @@ public class PatientApiController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
     /**
      * Delete a patient by ID.

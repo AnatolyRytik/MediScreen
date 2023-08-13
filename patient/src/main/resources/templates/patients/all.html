@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>All Patients</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg" style="background-color: white;">
+    <div class="container">
+        <a class="navbar-brand text-info" style="text-decoration: none;" th:href="@{/patients/all}">Return to patient
+            list</a>
+    </div>
+</nav>
 <div class="container">
     <h1>All Patients</h1>
 
@@ -30,15 +36,14 @@
             <td th:text="${patient.address}"></td>
             <td th:text="${patient.phoneNumber}"></td>
             <td>
-                <!-- Update button -->
-                <a th:href="@{/patients/{id}(id=${patient.id})}" class="btn btn-primary btn-sm" style="color: white;">View</a>
-                <!-- Delete button -->
-                <a th:href="@{/patients/delete/{id}(id=${patient.id})}" class="btn btn-danger btn-sm" style="color: white;">Delete</a>
+                <a class="btn btn-primary btn-sm" style="color: white;"
+                   th:href="@{'/patient/' + ${patient.id}}">View</a>
+                <a class="btn btn-danger btn-sm" style="color: white;" th:href="@{'/patients/delete/' + ${patient.id}}">Delete</a>
             </td>
         </tr>
         </tbody>
     </table>
-    <a th:href="@{/patients/add}" class="btn btn-primary" style="color: white;">Add Patient</a>
+    <a class="btn btn-primary" style="color: white;" th:href="@{/patients/add}">Add Patient</a>
 </div>
 
 

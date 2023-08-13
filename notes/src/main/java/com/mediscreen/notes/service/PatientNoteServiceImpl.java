@@ -2,6 +2,7 @@ package com.mediscreen.notes.service;
 
 import com.mediscreen.notes.dto.PatientNoteDto;
 import com.mediscreen.notes.model.PatientNote;
+import com.mediscreen.notes.proxy.PatientProxy;
 import com.mediscreen.notes.repository.PatientNoteRepository;
 import com.mediscreen.notes.util.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,18 +18,25 @@ import java.util.List;
 @Service
 public class PatientNoteServiceImpl implements PatientNoteService {
     private final PatientNoteRepository patientNoteRepository;
+    private final PatientProxy patientProxy;
 
-    public PatientNoteServiceImpl(PatientNoteRepository patientNoteRepository) {
+    public PatientNoteServiceImpl(PatientNoteRepository patientNoteRepository, PatientProxy patientProxy) {
         this.patientNoteRepository = patientNoteRepository;
+        this.patientProxy = patientProxy;
     }
 
     @Override
     public PatientNote createPatientNote(PatientNoteDto patientNoteDto) {
         log.info("Creating patient note");
-
-        PatientNote patientNote = new PatientNote(patientNoteDto);
-        patientNote.setCreationDate(LocalDate.now());
-        return patientNoteRepository.save(patientNote);
+        try {
+            patientProxy.getPatientById(patientNoteDto.getPatientId());
+            PatientNote patientNote = new PatientNote(patientNoteDto);
+            patientNote.setCreationDate(LocalDate.now());
+            return patientNoteRepository.save(patientNote);
+        } catch (NotFoundException e) {
+            log.error("Error occurred while creating patient note: Patient not found.", e);
+            throw e;
+        }
     }
 
     @Override
@@ -48,19 +56,31 @@ public class PatientNoteServiceImpl implements PatientNoteService {
     @Override
     public List<PatientNote> getAllPatientNotesByPatientId(Long patientId) {
         log.info("Getting all patient notes for patient with ID: {}", patientId);
-        return patientNoteRepository.getAllByPatientId(patientId);
+        try {
+            patientProxy.getPatientById(patientId);
+            return patientNoteRepository.getAllByPatientId(patientId);
+        } catch (NotFoundException e) {
+            log.error("Error occurred while fetching patient notes: Patient not found.", e);
+            throw e;
+        }
     }
 
     @Override
     public PatientNote updatePatientNote(String id, PatientNoteDto patientNoteDto) {
         log.info("Updating patient note with ID: {}", id);
-        PatientNote existingPatientNote = patientNoteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Patient note not found with ID: " + id));
+        try {
+            patientProxy.getPatientById(patientNoteDto.getPatientId());
 
-        PatientNote patientNote = new PatientNote(patientNoteDto);
-        patientNote.setId(existingPatientNote.getId());
-        patientNote.setCreationDate(existingPatientNote.getCreationDate());
-        return patientNoteRepository.save(patientNote);
+            PatientNote existingPatientNote = patientNoteRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Patient note not found with ID: " + id));
+            PatientNote patientNote = new PatientNote(patientNoteDto);
+            patientNote.setId(existingPatientNote.getId());
+            patientNote.setCreationDate(existingPatientNote.getCreationDate());
+            return patientNoteRepository.save(patientNote);
+        } catch (NotFoundException e) {
+            log.error("Error occurred while updating patient note: Patient or patient note not found.", e);
+            throw e;
+        }
     }
 
     @Override

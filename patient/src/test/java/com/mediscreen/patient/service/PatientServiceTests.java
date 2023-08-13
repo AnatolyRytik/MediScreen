@@ -11,13 +11,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 public class PatientServiceTests {
     @Mock
     private PatientRepository patientRepository;
@@ -72,9 +75,7 @@ public class PatientServiceTests {
         when(patientRepository.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
-        Assertions.assertThrows(NotFoundException.class, () -> {
-            patientService.getPatient(id);
-        });
+        Assertions.assertThrows(NotFoundException.class, () -> patientService.getPatient(id));
         verify(patientRepository, times(1)).findById(id);
     }
 
@@ -82,6 +83,9 @@ public class PatientServiceTests {
     public void testGetAllPatients() {
         // Arrange
         List<Patient> patients = Arrays.asList(new Patient(), new Patient());
+        List<PatientDto> patientDtoList = patients.stream()
+                .map(patientMapper::toDto)
+                .collect(Collectors.toList());
         when(patientRepository.findAll()).thenReturn(patients);
 
         // Act
@@ -121,9 +125,7 @@ public class PatientServiceTests {
         when(patientRepository.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
-        Assertions.assertThrows(NotFoundException.class, () -> {
-            patientService.updatePatient(id, patientDto);
-        });
+        Assertions.assertThrows(NotFoundException.class, () -> patientService.updatePatient(id, patientDto));
         verify(patientRepository, times(1)).findById(id);
     }
 
@@ -149,9 +151,7 @@ public class PatientServiceTests {
         when(patientRepository.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
-        Assertions.assertThrows(NotFoundException.class, () -> {
-            patientService.deletePatient(id);
-        });
+        Assertions.assertThrows(NotFoundException.class, () -> patientService.deletePatient(id));
         verify(patientRepository, times(1)).findById(id);
     }
 }

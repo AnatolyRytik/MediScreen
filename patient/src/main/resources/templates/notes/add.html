@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Add Note</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg" style="background-color: white;">
+    <div class="container">
+        <a class="navbar-brand text-info d-block" style="text-decoration: none;" th:href="@{/patients/all}">Return to patient list</a>
+        <a class="navbar-brand text-info d-block" style="text-decoration: none;" th:href="@{/patient/{patientId}(patientId=${patientId})}">Return to Patient</a>
+    </div>
+</nav>
+<br>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2>Add Note</h2>
+            <form method="post" th:action="@{/patient/{patientId}/add-note(patientId=${patientId})}"
+                  th:object="${noteDto}">
+                <div class="form-group">
+                    <label for="note">Note Text</label>
+                    <input class="form-control" id="note" placeholder="Enter note text" required
+                           th:field="*{note}" type="text">
+                </div>
+                <button class="btn btn-primary" type="submit">Add Note</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
